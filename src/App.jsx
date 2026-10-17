@@ -4,6 +4,7 @@ import ProtectedRoute from './components/ProtectedRoute'
 
 import Login from './pages/Login'
 import Profil from './pages/Profil'
+import DefinirMotDePasse from './pages/DefinirMotDePasse'
 import DashboardDirecteur from './pages/directeur/DashboardDirecteur'
 import Moniteurs from './pages/directeur/Moniteurs'
 import Classes from './pages/directeur/Classes'
@@ -16,12 +17,6 @@ import Enfants from './pages/moniteur/Enfants'
 import AjoutEnfant from './pages/moniteur/AjoutEnfant'
 import RapportDimanche from './pages/moniteur/RapportDimanche'
 import AbsencesMoniteur from './pages/moniteur/AbsencesMoniteur'
-
-// Écrans pas encore développés (prochaine étape) : on affiche un
-// message temporaire pour éviter les pages blanches.
-function Bientot({ titre }) {
-  return <div className="page"><h1>{titre}</h1><p style={{ color: 'var(--muted)' }}>Écran en cours de développement.</p></div>
-}
 
 function Accueil() {
   const { profile } = useAuth()
@@ -45,15 +40,14 @@ export default function App() {
       <Route path="/" element={<ProtectedRoute><Accueil /></ProtectedRoute>} />
       <Route path="/absences" element={<ProtectedRoute><Absences /></ProtectedRoute>} />
       <Route path="/profil" element={<ProtectedRoute><Profil /></ProtectedRoute>} />
+      <Route path="/definir-mot-de-passe" element={<ProtectedRoute><DefinirMotDePasse /></ProtectedRoute>} />
 
-      {/* Directeur */}
       <Route path="/moniteurs" element={<ProtectedRoute role="directeur"><Moniteurs /></ProtectedRoute>} />
       <Route path="/classes" element={<ProtectedRoute role="directeur"><Classes /></ProtectedRoute>} />
       <Route path="/rapports" element={<ProtectedRoute role="directeur"><Rapports /></ProtectedRoute>} />
       <Route path="/statistiques" element={<ProtectedRoute role="directeur"><Statistiques /></ProtectedRoute>} />
       <Route path="/synthese" element={<ProtectedRoute role="directeur"><Synthese /></ProtectedRoute>} />
 
-      {/* Moniteur */}
       <Route path="/enfants" element={<ProtectedRoute role="moniteur"><Enfants /></ProtectedRoute>} />
       <Route path="/enfants/ajouter" element={<ProtectedRoute role="moniteur"><AjoutEnfant /></ProtectedRoute>} />
       <Route path="/rapport" element={<ProtectedRoute role="moniteur"><RapportDimanche /></ProtectedRoute>} />
