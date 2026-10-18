@@ -3,6 +3,14 @@ import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../context/AuthContext'
 import BottomNavDirecteur from '../../components/BottomNavDirecteur'
 
+function traduireErreur(msg = '') {
+  const m = msg.toLowerCase()
+  if (m.includes('not authorized')) return "Supabase n'envoie des emails qu'aux membres de ton équipe tant qu'aucun service d'email n'est configuré. (" + msg + ')'
+  if (m.includes('rate limit')) return "Trop d'emails envoyés en peu de temps. Réessaie dans une heure. (" + msg + ')'
+  if (m.includes('already') && m.includes('registered')) return 'Cette adresse email a déjà un compte. (' + msg + ')'
+  return msg
+}
+
 export default function Moniteurs() {
   const { profile } = useAuth()
   const [liste, setListe] = useState([])
@@ -10,6 +18,7 @@ export default function Moniteurs() {
   const [form, setForm] = useState({ nom: '', prenoms: '', email: '', whatsapp: '', lieu_habitation: '', bapteme_eau: 'Oui', bapteme_saint_esprit: 'Oui' })
   const [envoi, setEnvoi] = useState(false)
   const [message, setMessage] = useState('')
+  const [messageErreur, setMessageErreur] = useState(false)
 
   async function charger() {
     const { data } = await supabase
@@ -29,15 +38,11 @@ export default function Moniteurs() {
     e.preventDefault()
     setEnvoi(true)
     setMessage('')
+    setMessageErreur(false)
 
-    // NOTE: inviteUserByEmail nécessite la clé "service_role" et doit donc
-    // être appelé depuis une Supabase Edge Function, jamais depuis le
-    // navigateur. Voir supabase/functions/invite-moniteur/ (à créer).
     const { error } = await supabase.functions.invoke('invite-moniteur', {
       body: {
         email: form.email,
-        ecole_dimanche_id: profile.ecole_dimanche_id,
-        role: 'moniteur',
         nom: form.nom,
         prenoms: form.prenoms,
         whatsapp: form.whatsapp,
@@ -49,7 +54,15 @@ export default function Moniteurs() {
 
     setEnvoi(false)
     if (error) {
-      setMessage("Erreur lors de l'envoi de l'invitation.")
+      let detail = ''
+      try {
+        const corps = await error.context.json()
+        detail = corps.error || ''
+      } catch (_) {
+        detail = error.message || ''
+      }
+      setMessageErreur(true)
+      setMessage("Erreur lors de l'envoi de l'invitation : " + (traduireErreur(detail) || 'cause inconnue'))
       return
     }
     setMessage('Invitation envoyée !')
@@ -62,7 +75,7 @@ export default function Moniteurs() {
     <div className="page" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       <h1 style={{ fontSize: 20 }}>Moniteurs</h1>
 
-      {message && <div style={{ fontSize: 13, color: 'var(--accent)' }}>{message}</div>}
+      {message && <div style={{ fontSize: 13, color: messageErreur ? 'var(--danger)' : 'var(--accent)' }}>{message}</div>}
 
       {liste.map((m) => (
         <div key={m.id} className="card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
