@@ -77,34 +77,46 @@ label {
   padding: 16px;
 }
 
+/* Onglets de navigation, fixés en haut de l'écran (classe historiquement nommée "bottom-nav") */
 .bottom-nav {
   position: fixed;
-  bottom: 0; left: 0; right: 0;
-  height: 64px;
+  top: 0; left: 0; right: 0;
+  height: 56px;
   background: var(--surface);
-  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
   display: flex;
-  align-items: center;
-  justify-content: space-around;
+  align-items: stretch;
   max-width: 480px;
   margin: 0 auto;
+  z-index: 10;
 }
 
 .bottom-nav a {
-  font-size: 11px;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
   color: var(--muted);
+  border-bottom: 3px solid transparent;
 }
 
 .bottom-nav a.active {
   color: var(--accent);
   font-weight: 700;
+  border-bottom-color: var(--accent);
 }
 
 .page {
   max-width: 480px;
   margin: 0 auto;
-  padding: 20px 20px 84px 20px;
+  padding: 20px 20px 24px 20px;
   min-height: 100vh;
+}
+
+/* Pages qui affichent la barre d'onglets : on laisse la place en haut */
+.page:has(> .bottom-nav) {
+  padding-top: 76px;
 }
 
 @media print {
