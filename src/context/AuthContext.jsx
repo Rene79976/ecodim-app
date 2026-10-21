@@ -5,9 +5,10 @@ const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
   const [session, setSession] = useState(null)
-  const [sessionChecked, setSessionChecked] = useState(false) // la session enregistrée a-t-elle été lue ?
-  const [profile, setProfile] = useState(null) // ligne de la table "utilisateurs"
-  const [profileUserId, setProfileUserId] = useState(null) // utilisateur dont le profil a fini de charger
+  const [sessionChecked, setSessionChecked] = useState(false)
+  const [profile, setProfile] = useState(null)
+  const [ecole, setEcole] = useState(null)
+  const [profileUserId, setProfileUserId] = useState(null)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -24,31 +25,43 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     if (!session) {
       setProfile(null)
+      setEcole(null)
       setProfileUserId(null)
       return
     }
     let annule = false
-    supabase
-      .from('utilisateurs')
-      .select('*')
-      .eq('id', session.user.id)
-      .single()
-      .then(({ data }) => {
-        if (annule) return
-        setProfile(data)
-        setProfileUserId(session.user.id)
-      })
+    async function chargerProfil() {
+      const lire = () => supabase.from('utilisateurs').select('*').eq('id', session.user.id).maybeSingle()
+      let { data } = await lire()
+
+      // Première connexion d'un directeur qui vient de s'inscrire : on crée son ECODIM.
+      if (!data && session.user.user_metadata?.nom_ecole) {
+        await supabase.rpc('finaliser_inscription')
+        const res = await lire()
+        data = res.data
+      }
+
+      let ecoleData = null
+      if (data) {
+        const res = await supabase.from('ecoles_dimanche').select('id, nom').eq('id', data.ecole_dimanche_id).maybeSingle()
+        ecoleData = res.data
+      }
+
+      if (annule) return
+      setProfile(data)
+      setEcole(ecoleData)
+      setProfileUserId(session.user.id)
+    }
+    chargerProfil()
     return () => { annule = true }
   }, [session])
 
-  // Tant que la session n'a pas été lue, ou que le profil d'un utilisateur
-  // connecté n'est pas chargé, on reste en "chargement" (pas de redirection).
   const loading = !sessionChecked || (session !== null && profileUserId !== session.user.id)
 
   const signOut = () => supabase.auth.signOut()
 
   return (
-    <AuthContext.Provider value={{ session, profile, loading, signOut }}>
+    <AuthContext.Provider value={{ session, profile, ecole, loading, signOut }}>
       {children}
     </AuthContext.Provider>
   )
