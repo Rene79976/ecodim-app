@@ -77,10 +77,32 @@ label {
   padding: 16px;
 }
 
+/* En-tête : nom de l'ECODIM, visible par le directeur et par ses moniteurs */
+.ecole-header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 36px;
+  max-width: 480px;
+  margin: 0 auto;
+  background: #10284F;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  z-index: 20;
+}
+
 /* Onglets de navigation, fixés en haut de l'écran (classe historiquement nommée "bottom-nav") */
 .bottom-nav {
   position: fixed;
-  top: 0; left: 0; right: 0;
+  top: 36px; left: 0; right: 0;
   height: 56px;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
@@ -110,16 +132,17 @@ label {
 .page {
   max-width: 480px;
   margin: 0 auto;
-  padding: 20px 20px 24px 20px;
+  padding: 56px 20px 24px 20px;
   min-height: 100vh;
 }
 
 /* Pages qui affichent la barre d'onglets : on laisse la place en haut */
 .page:has(> .bottom-nav) {
-  padding-top: 76px;
+  padding-top: 112px;
 }
 
 @media print {
+  .ecole-header { position: static; background: #fff; color: #000; border-bottom: 1px solid #000; max-width: none; }
   .no-print { display: none !important; }
   .bottom-nav { display: none !important; }
   body { background: #FFFFFF; }
