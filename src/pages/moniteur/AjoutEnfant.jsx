@@ -6,10 +6,11 @@ import { supabase } from '../../lib/supabase'
 export default function AjoutEnfant() {
   const { profile } = useAuth()
   const navigate = useNavigate()
-  const [classes, setClasses] = useState([])
+  const [classes, setClasses] = useState(null) // null = chargement en cours
+  const [classeId, setClasseId] = useState('')
   const [form, setForm] = useState({
-    classe_id: '', nom: '', prenoms: '', sexe: 'F', age: '',
-    classe_scolaire: '', classe_ecodim: '', lieu_habitation: '',
+    nom: '', prenoms: '', sexe: 'F', age: '',
+    classe_scolaire: '', lieu_habitation: '',
     parent1_nom: '', parent1_tel: '', parent2_nom: '', parent2_tel: '',
   })
   const [loading, setLoading] = useState(false)
@@ -20,11 +21,12 @@ export default function AjoutEnfant() {
     async function charger() {
       const { data } = await supabase
         .from('classe_moniteurs')
-        .select('classes(id, nom)')
+        .select('created_at, classes(id, nom)')
         .eq('moniteur_id', profile.id)
-      const liste = (data || []).map((row) => row.classes)
+        .order('created_at')
+      const liste = (data || []).map((row) => row.classes).filter(Boolean)
       setClasses(liste)
-      if (liste.length === 1) setForm((f) => ({ ...f, classe_id: liste[0].id }))
+      if (liste.length > 0) setClasseId(liste[0].id)
     }
     charger()
   }, [profile])
@@ -32,17 +34,16 @@ export default function AjoutEnfant() {
   async function enregistrer(e) {
     e.preventDefault()
     setError('')
-    if (!form.classe_id) { setError('Choisis une classe.'); return }
+    if (!classeId) { setError("Tu n'es affecté à aucune classe."); return }
     setLoading(true)
     const { error } = await supabase.from('enfants').insert({
       ecole_dimanche_id: profile.ecole_dimanche_id,
-      classe_id: form.classe_id,
+      classe_id: classeId,
       nom: form.nom,
       prenoms: form.prenoms,
       sexe: form.sexe,
       age: form.age ? parseInt(form.age, 10) : null,
       classe_scolaire: form.classe_scolaire || null,
-      classe_ecodim: form.classe_ecodim || null,
       lieu_habitation: form.lieu_habitation || null,
       parent1_nom: form.parent1_nom || null,
       parent1_tel: form.parent1_tel || null,
@@ -55,26 +56,48 @@ export default function AjoutEnfant() {
     navigate('/enfants')
   }
 
+  const entete = (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+      <a href="/enfants" style={{ fontSize: 20, color: 'var(--accent)' }}>←</a>
+      <h1 style={{ fontSize: 18 }}>Ajouter un enfant</h1>
+    </div>
+  )
+
+  if (classes === null) {
+    return <div className="page"><div style={{ color: 'var(--muted)' }}>Chargement…</div></div>
+  }
+
+  if (classes.length === 0) {
+    return (
+      <div className="page" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+        {entete}
+        <div className="card" style={{ fontSize: 14, color: 'var(--muted)' }}>
+          Tu n'es affecté à aucune classe pour le moment. Demande au directeur de t'affecter à une classe pour pouvoir ajouter des enfants.
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="page" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        <a href="/enfants" style={{ fontSize: 20, color: 'var(--accent)' }}>←</a>
-        <h1 style={{ fontSize: 18 }}>Ajouter un enfant</h1>
-      </div>
+      {entete}
 
       <form onSubmit={enregistrer} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-        {classes.length > 1 && (
+        {classes.length === 1 ? (
+          <div className="card" style={{ background: 'var(--accent-soft)', borderColor: 'var(--accent-soft)', fontSize: 14 }}>
+            L'enfant sera ajouté à ta classe : <strong>{classes[0].nom}</strong>
+          </div>
+        ) : (
           <div>
             <label>Classe</label>
-            <select required value={form.classe_id} onChange={(e) => setForm({ ...form, classe_id: e.target.value })}>
-              <option value="">Choisir…</option>
+            <select required value={classeId} onChange={(e) => setClasseId(e.target.value)}>
               {classes.map((c) => <option key={c.id} value={c.id}>{c.nom}</option>)}
             </select>
           </div>
         )}
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <div className="sec" style={{ fontSize: 12, fontWeight: 700, color: 'var(--accent)', textTransform: 'uppercase' }}>Informations personnelles</div>
+          <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--accent)', textTransform: 'uppercase' }}>Informations personnelles</div>
           <div><label>Nom</label><input required value={form.nom} onChange={(e) => setForm({ ...form, nom: e.target.value })} /></div>
           <div><label>Prénoms</label><input required value={form.prenoms} onChange={(e) => setForm({ ...form, prenoms: e.target.value })} /></div>
           <div style={{ display: 'flex', gap: 10 }}>
@@ -92,7 +115,6 @@ export default function AjoutEnfant() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--accent)', textTransform: 'uppercase' }}>Informations scolaires</div>
           <div><label>Classe scolaire</label><input value={form.classe_scolaire} onChange={(e) => setForm({ ...form, classe_scolaire: e.target.value })} /></div>
-          <div><label>Classe ECODIM</label><input value={form.classe_ecodim} onChange={(e) => setForm({ ...form, classe_ecodim: e.target.value })} /></div>
           <div><label>Lieu d'habitation</label><input value={form.lieu_habitation} onChange={(e) => setForm({ ...form, lieu_habitation: e.target.value })} /></div>
         </div>
 
