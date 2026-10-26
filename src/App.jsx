@@ -18,7 +18,7 @@ import Enfants from './pages/moniteur/Enfants'
 import AjoutEnfant from './pages/moniteur/AjoutEnfant'
 import RapportDimanche from './pages/moniteur/RapportDimanche'
 import AbsencesMoniteur from './pages/moniteur/AbsencesMoniteur'
-
+import Proprietaire from './pages/Proprietaire'
 function DefinirMotDePasse() {
   const { profile } = useAuth()
   const navigate = useNavigate()
@@ -182,6 +182,7 @@ export default function App() {
       <Route path="/" element={<ProtectedRoute><Accueil /></ProtectedRoute>} />
       <Route path="/absences" element={<ProtectedRoute><Absences /></ProtectedRoute>} />
       <Route path="/profil" element={<ProtectedRoute><Profil /></ProtectedRoute>} />
+            <Route path="/proprietaire" element={<ProtectedRoute><Proprietaire /></ProtectedRoute>} />
       <Route path="/definir-mot-de-passe" element={<ProtectedRoute><DefinirMotDePasse /></ProtectedRoute>} />
 
       <Route path="/moniteurs" element={<ProtectedRoute role="directeur"><Moniteurs /></ProtectedRoute>} />
