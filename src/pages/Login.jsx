@@ -16,27 +16,28 @@ export default function Login() {
     const { error } = await supabase.auth.signInWithPassword({ email, password })
     setLoading(false)
     if (error) {
-      setError("Email ou mot de passe incorrect.")
+      setError('Email ou mot de passe incorrect.')
       return
     }
     navigate('/')
   }
 
   return (
-    <div className="page" style={{ display: 'flex', flexDirection: 'column', gap: 24, paddingTop: 60 }}>
-      <div style={{ textAlign: 'center' }}>
-        <h1 style={{ color: 'var(--accent)', fontSize: 24 }}>ECODIM</h1>
-        <p style={{ color: 'var(--muted)', fontSize: 14 }}>Connexion à votre espace</p>
+    <div className="login">
+      <div className="login-hero">
+        <div className="logo">Ecodim<span>Plus</span></div>
+        <p>Gérez votre École du Dimanche, simplement</p>
       </div>
 
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+      <form onSubmit={handleSubmit} className="card login-carte">
+        <h2 style={{ fontSize: 22 }}>Connexion</h2>
         <div>
-          <label htmlFor="email">Email</label>
-          <input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+          <label htmlFor="email">Adresse email</label>
+          <input id="email" type="email" required autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} />
         </div>
         <div>
           <label htmlFor="password">Mot de passe</label>
-          <input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+          <input id="password" type="password" required autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} />
         </div>
         {error && <div style={{ color: 'var(--danger)', fontSize: 13 }}>{error}</div>}
         <button className="btn-primary" type="submit" disabled={loading}>
