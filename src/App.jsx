@@ -19,6 +19,9 @@ import AjoutEnfant from './pages/moniteur/AjoutEnfant'
 import RapportDimanche from './pages/moniteur/RapportDimanche'
 import AbsencesMoniteur from './pages/moniteur/AbsencesMoniteur'
 import Proprietaire from './pages/Proprietaire'
+
+// Page ouverte depuis le lien reçu par email (invitation ou réinitialisation) :
+// la personne est déjà connectée par le lien, elle choisit son mot de passe.
 function DefinirMotDePasse() {
   const { profile } = useAuth()
   const navigate = useNavigate()
@@ -51,7 +54,7 @@ function DefinirMotDePasse() {
   return (
     <div className="page" style={{ paddingTop: 60, display: 'flex', flexDirection: 'column', gap: 24 }}>
       <div style={{ textAlign: 'center' }}>
-        <h1 style={{ color: 'var(--accent)', fontSize: 24 }}>EcodimPlus</h1>
+        <h1 style={{ color: 'var(--accent)', fontSize: 24 }}>IctusKid</h1>
         <p style={{ color: 'var(--muted)', fontSize: 14 }}>
           {profile?.prenoms ? `Bienvenue ${profile.prenoms}, choisis ton mot de passe` : 'Choisis ton mot de passe'}
         </p>
@@ -75,6 +78,9 @@ function DefinirMotDePasse() {
   )
 }
 
+// Page d'inscription : le directeur crée son ECODIM en donnant son nom.
+// L'ECODIM est créé à la première connexion (voir AuthContext), que l'email
+// soit confirmé tout de suite ou plus tard.
 function Inscription() {
   const navigate = useNavigate()
   const [f, setF] = useState({ ecole: '', nom: '', prenoms: '', email: '', mdp: '', confirmation: '' })
@@ -105,7 +111,7 @@ function Inscription() {
   return (
     <div className="page" style={{ paddingTop: 40, display: 'flex', flexDirection: 'column', gap: 20 }}>
       <div style={{ textAlign: 'center' }}>
-        <h1 style={{ color: 'var(--accent)', fontSize: 26 }}>EcodimPlus</h1>
+        <h1 style={{ color: 'var(--accent)', fontSize: 26 }}>IctusKid</h1>
         <p style={{ color: 'var(--muted)', fontSize: 14 }}>Crée ton ECODIM</p>
       </div>
 
@@ -148,6 +154,7 @@ function Inscription() {
   )
 }
 
+// Page de connexion + lien pour créer son ECODIM
 function PageConnexion() {
   return (
     <>
@@ -182,7 +189,7 @@ export default function App() {
       <Route path="/" element={<ProtectedRoute><Accueil /></ProtectedRoute>} />
       <Route path="/absences" element={<ProtectedRoute><Absences /></ProtectedRoute>} />
       <Route path="/profil" element={<ProtectedRoute><Profil /></ProtectedRoute>} />
-            <Route path="/proprietaire" element={<ProtectedRoute><Proprietaire /></ProtectedRoute>} />
+      <Route path="/proprietaire" element={<ProtectedRoute><Proprietaire /></ProtectedRoute>} />
       <Route path="/definir-mot-de-passe" element={<ProtectedRoute><DefinirMotDePasse /></ProtectedRoute>} />
 
       <Route path="/moniteurs" element={<ProtectedRoute role="directeur"><Moniteurs /></ProtectedRoute>} />
