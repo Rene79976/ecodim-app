@@ -38,7 +38,7 @@ export default function DashboardMoniteur() {
     <div className="page" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       <div className="hero">
         <div className="hero-ligne">
-          <div className="logo">Ecodim<span>Plus</span></div>
+          <div className="logo">Ictus<span>Kid</span></div>
           <Link to="/profil" className="avatar-or">{initiales}</Link>
         </div>
         <div>
