@@ -4,6 +4,7 @@ import ProgressRing from '../components/ProgressRing'
 
 const fcfa = (n) => Number(n || 0).toLocaleString('fr-FR') + ' FCFA'
 const dateFr = (d) => (d ? new Date(d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) : '—')
+// nombre de jours écoulés depuis une date (négatif si la date est dans le futur)
 const ecartJours = (d) => (d ? Math.floor((Date.now() - new Date(d).getTime()) / 86400000) : null)
 
 const etiquette = { fontSize: 11.5, fontWeight: 700, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '0.06em' }
@@ -45,7 +46,7 @@ function Surveillance({ titre, couleur, lignes }) {
 
 export default function Proprietaire() {
   const [etat, setEtat] = useState({ chargement: true })
-  const [edition, setEdition] = useState(null)
+  const [edition, setEdition] = useState(null) // id de l'école dont on modifie l'abonnement
   const [form, setForm] = useState({ plafond: '100', montant: '4900', statut: 'actif', renouvellement: '' })
   const [enregistrement, setEnregistrement] = useState(false)
   const [message, setMessage] = useState('')
@@ -106,7 +107,7 @@ export default function Proprietaire() {
         <h1 style={{ fontSize: 20 }}>Espace propriétaire</h1>
         <div className="card" style={{ fontSize: 14, color: 'var(--muted)' }}>
           {etat.erreur.includes('Accès refusé')
-            ? "Cet espace est réservé au propriétaire d'EcodimPlus."
+            ? "Cet espace est réservé au propriétaire d'IctusKid."
             : "Impossible de charger les données : " + etat.erreur}
         </div>
         <a href="/" className="btn-outline" style={{ textAlign: 'center' }}>Retour</a>
@@ -140,7 +141,7 @@ export default function Proprietaire() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <h1 style={{ fontSize: 22 }}>Espace propriétaire</h1>
-          <div style={{ fontSize: 12.5, color: 'var(--muted)' }}>Vue d'ensemble d'EcodimPlus</div>
+          <div style={{ fontSize: 12.5, color: 'var(--muted)' }}>Vue d'ensemble d'IctusKid</div>
         </div>
         <button className="btn-outline" style={{ padding: '8px 14px' }} onClick={() => { setEtat({ chargement: true }); charger() }}>Actualiser</button>
       </div>
