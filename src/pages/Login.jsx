@@ -25,7 +25,7 @@ export default function Login() {
   return (
     <div className="login">
       <div className="login-hero">
-        <div className="logo">Ecodim<span>Plus</span></div>
+        <div className="logo">Ictus<span>Kid</span></div>
         <p>Gérez votre École du Dimanche, simplement</p>
       </div>
 
