@@ -19,6 +19,7 @@ import AjoutEnfant from './pages/moniteur/AjoutEnfant'
 import RapportDimanche from './pages/moniteur/RapportDimanche'
 import AbsencesMoniteur from './pages/moniteur/AbsencesMoniteur'
 import Proprietaire from './pages/Proprietaire'
+import Landing from './pages/Landing'
 
 // Page ouverte depuis le lien reçu par email (invitation ou réinitialisation) :
 // la personne est déjà connectée par le lien, elle choisit son mot de passe.
@@ -166,6 +167,14 @@ function PageConnexion() {
   )
 }
 
+// Page d'accueil : les visiteurs voient la présentation, les personnes connectées leur espace
+function PageAccueil() {
+  const { session, loading } = useAuth()
+  if (loading) return <div style={{ padding: 24 }}>Chargement…</div>
+  if (!session) return <Landing />
+  return <ProtectedRoute><Accueil /></ProtectedRoute>
+}
+
 function Accueil() {
   const { profile } = useAuth()
   if (profile?.role === 'directeur') return <DashboardDirecteur />
@@ -186,7 +195,7 @@ export default function App() {
       <Route path="/login" element={<PageConnexion />} />
       <Route path="/inscription" element={<Inscription />} />
 
-      <Route path="/" element={<ProtectedRoute><Accueil /></ProtectedRoute>} />
+      <Route path="/" element={<PageAccueil />} />
       <Route path="/absences" element={<ProtectedRoute><Absences /></ProtectedRoute>} />
       <Route path="/profil" element={<ProtectedRoute><Profil /></ProtectedRoute>} />
       <Route path="/proprietaire" element={<ProtectedRoute><Proprietaire /></ProtectedRoute>} />
