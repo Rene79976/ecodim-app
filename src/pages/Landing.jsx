@@ -4,7 +4,7 @@ import ProgressRing from '../components/ProgressRing'
 
 // Numéro WhatsApp affiché sur la page : indicatif du pays inclus, sans "+" ni espaces
 // (exemple : 2250700000000). Laisse vide ('') pour masquer le bouton WhatsApp.
-const WHATSAPP = ''
+const WHATSAPP = '2250749759179'
 
 const conteneur = { maxWidth: 1000, margin: '0 auto', padding: '0 20px' }
 const titreSection = { fontSize: 'clamp(24px, 4vw, 32px)', textAlign: 'center', margin: '0 0 10px' }
